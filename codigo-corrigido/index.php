@@ -11,7 +11,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             falhar(400, 'Perfil inválido.');
         }
         // Login rápido é uma SIMULAÇÃO; não há autenticação de produção por senha.
-        $consulta = $pdo->prepare('SELECT id, username, nome, papel FROM usuarios WHERE username = :perfil');
+    $stmt = $pdo->prepare("
+    SELECT c.id, u.username, c.mensagem, c.criado_em 
+    FROM comentarios c 
+    JOIN usuarios u ON c.usuario_id = u.id 
+    ORDER BY c.criado_em DESC
+");
         $consulta->execute(['perfil' => $perfil]);
         $usuario = $consulta->fetch();
         if (!$usuario) { falhar(503, 'Perfis ausentes. Importe os dados iniciais pelo setup.php.'); }
